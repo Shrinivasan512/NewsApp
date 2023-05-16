@@ -1,0 +1,183 @@
+@startuml Diagram for the HomeScreenVM
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title HomeScreenVM
+autonumber 1
+hide footbox
+
+participant Caller as c
+participant HomeScreenVM as h
+participant NewsBOExtension as nx
+participant NewsService as ns
+participant Utilites as ut
+
+c->h:Invoke **fetchAllNews()**
+activate c
+activate h
+alt  (TRY)
+    h->h: Set **@isLoading** to true
+    h->ns:Invoke **getNews()**
+    activate ns
+    ns-->h: Returns 
+    deactivate ns
+    alt  statuscode == OK
+        h->h: Assign the result content to **@tempNewsList & originalNewsList**
+        h-->c: Returns
+    else #NEGATIVEERESPONSE
+        h->h: Empty the **@tempNewsList & originalNewsList** 
+        h->h: Invoke the **navigateToRetriveFailScreen()**
+        h-->c: Returns
+    end
+    h->h: Set **@isLoading** to false
+    h-->c: Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns the Serviceresult with the statuscode as SystemException with the message
+    deactivate h
+    deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+**TRY**
+
+    SET **@isLoading** as true
+
+    INVOKE the method **getNews()** from the **NewService**
+
+    RETURN the **ServiceResult<List<NewsBO>>** from the **NewService**
+
+    **IF statuscode == OK**
+
+    ASSIGN it to the variable **@tempNewsList** & **originalNewsList**
+
+    RETURN the **@tempNewsList** to the **Caller**
+
+    **ELSE**
+
+    EMPTY **@tempNewsList & originalNewsList** 
+
+    INVOKE the method **navigateToRetriveScreen()** to naviagte to **RetrivalScreen**
+
+    SET **isLoading** as false
+
+    **CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+
+c->h:Invoke **filterNews(category: Category)**
+activate c
+activate h
+alt   (TRY)
+    h->h:Set **@isLoading** to true
+    h->nx:Invoke **@tempNewsList.filterBasedOnCategory()**
+    activate nx
+    nx-->h:Returns 
+    deactivate nx
+    h->h: Set the Sorted list in **@tempNewsList**
+    h->h:Set **@isLoading** to false
+    h-->c:Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+
+    **TRY**
+
+    SET **isLoading** as true
+
+    INVOKE the method **@tempNewsList.filterBasedOnCategory()** from the **NewsBOExtension**
+
+    SET SortedList to the **@tempNewsList**
+
+    SET **isLoading** as false
+
+    **CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+c->h:Invoke **navigateToCreationScreen()**
+activate c
+activate h
+alt  (TRY)
+    h->h : Add **NavigatorPush** on the **NavigationStream**
+    h-->c: Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+
+    **TRY**
+    
+    ADD the **NavigatorPush** on the **NavigationStream**
+
+    **CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+
+c->h:Invoke **navigateToRetriveScreen()**
+activate c
+activate h
+alt  (TRY)
+    h->h : Add **NavigatorPush** on the **NavigationStream**
+    h-->c: Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+
+    ADD the **NavigatorPush** on the **NavigationStream**
+
+    **CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+
+@enduml

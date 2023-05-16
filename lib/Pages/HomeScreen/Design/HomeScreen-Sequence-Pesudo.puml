@@ -1,0 +1,136 @@
+@startuml Diagram of the HomeScreen
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title HomeScreen
+autonumber 1
+hide footbox
+
+participant User as u
+participant HomeScreen as h
+participant HomeScreenVM as hv
+
+u->h : Invoke **initState()**
+activate u
+activate h
+alt  (TRY)
+    h->hv:Invoke **fetchAllNews()**
+    activate hv
+    hv-->h:Returns
+    deactivate hv
+    h-->u:Return the  NewsDetails
+    h->h:Add Listener to the NavigationStream
+    alt (event is NavigatorPush)
+        h->h:Push the Context to the **CreationScreen**
+        h-->u:Returns
+    end
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->u:Returns
+    deactivate h
+    deactivate u
+
+end
+
+==PESUDOCODE==
+hnote across
+**TRY**
+    INVOKE **fetchAllNews** in the HomeScreen class using the **Instanace**
+
+    ADD a listener to the **navigationStream** and listen to the **events**
+
+        **IF event is NavigatorPush**
+
+        PUSH the context to the **CreationScreen**
+
+
+**CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+u->h:Invoke **dispose()**
+activate u
+activate h
+alt  (TRY)
+    h->h:Dispose the **Instance** of the HomeScreen
+    h->h:Dispose the **navigationStream**
+    h-->u:Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->u:Returns
+    deactivate h
+    deactivate u
+end
+    ==PESUDOCODE==
+    hnote across
+
+    DISPOSE the **Instance** using **dispose()** method
+
+    DISPOSE the **navigationStream** using **dispose()** method
+
+
+    endnote
+
+
+    newpage
+    autonumber 1
+    hide footbox
+    u->h : 'ADD' button.clicked
+    activate u
+    activate h
+    h->hv: Invoke **navigateToCreationScreen()**
+    activate hv
+    hv-->h :Returns
+    deactivate hv
+    h-->u:Display the **CreationScreen**
+    deactivate u
+    deactivate h
+
+    ==PESUDOCODE==
+    hnote across
+
+        INVOKE **navigateToCreationScreen()** in the HomeScreen 
+
+     endnote
+
+
+    newpage
+    autonumber 1
+    hide footbox
+    u->h: 'filter' button.clicked
+    activate u
+    activate h
+    h->hv: Invoke **filterNews()**
+    activate hv
+    hv-->h : Returns
+    deactivate hv
+    h-->u: Display the **filteredList**
+    deactivate h
+    deactivate u
+
+    ==PESUDOCODE==
+    hnote across
+
+    INVOKE **filterNews()** in the HomeScreen 
+
+
+    endnote
+
+    @enduml

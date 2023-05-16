@@ -1,0 +1,187 @@
+@startuml Diagram for Creations
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title CreationScreen
+autonumber 1
+hide footbox
+
+participant User as c
+participant CreationScreen as h
+participant CreationScreenVM as hv
+
+c->h:Invoke **initState()**
+activate c
+activate h
+alt  (TRY)
+    h->h:Add Listener to the NavigationStream
+    alt (event is navigatorPush)
+        h->h:Push the Context to the **ResponseScreen** 
+        h-->c:Returns
+    else (event is navigatorPop)
+        h->h:Pop the Context to the **HomeScreen**
+        h-->c:Retuns
+    end
+    h->h:Add Listener to the textFeildController Stream
+    alt (event is TitleText)
+        h->h:Assign the event data to the text editing Controller
+        h-->c:Retunrs
+    end
+    h->h:Add Listener to the textFeildController Stream
+    alt (event is discriptionText)
+        h->h:Assign the event data to the text editing Controller
+        h-->c:Retunrs
+    end
+    h->h:Add Listener to the textFeildController Stream
+    alt (event is date)
+        h->h:Assign the event data to the text editing Controller
+        h-->c:Returns
+    end
+    h->h:Add Listener to the textFeildController Stream
+    alt (event is category)
+        h->h:Assign the event data to the text editing Controller
+        h-->c:Returns
+    end
+
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+    
+          ADD a listener to the **navigationStream** and listen to the **events**
+
+            **IF event is NavigatorPush**
+            
+                PUSH the context to the **ResponseScreen** with data as **status code**
+
+            **ELSE IF event is NavigatorPop**
+
+              POP the context to the **HomeScreen**
+
+            Add a listener to the **textfieldcontroller** and listen to the **events**
+
+            **IF event is TitleText**
+
+                Assign the event data to the controller  
+
+            Add a listener to the **textfieldcontroller** and listen to the **events** 
+            
+            **IF event is DescriptionText**
+
+                Assign the event data to the controller
+
+            **IF event is dateText**
+
+                Assign the event data to the controller
+            
+            **IF event is categoryText**
+
+                Assign the event data to the controller
+
+    **CATCH**
+
+        INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+c->h:Invoke **dispose()**
+activate c
+activate h
+alt  (TRY)
+    h->h:Dispose the **Instance** of the CreationScreen
+    h->h:Dispose the **navigationStream**
+    h->h:Dispose the **TextEditingContoller**
+    h-->c:Returns
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate u
+end
+deactivate h
+deactivate c
+
+==PESUDOCODE==
+hnote across
+
+    DISPOSE the **Instance** using **dispose()** method
+
+    DISPOSE the **navigationStream** using **dispose()** method
+
+    DISPOSE the **TextEditingContoller** using **dispose()** method 
+
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+c->h:'CREATE' button.Clicked
+activate c
+activate h
+h->hv:Invoke **createNews()**
+activate hv
+hv-->h:Returns
+deactivate hv
+h-->c:Display the **ResponseScreen**
+deactivate h
+deactivate c
+
+==PESUDOCODE==
+hnote across
+
+
+        INVOKE **createNews()** in the CreationScreen class 
+
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+c->h:'GoBack' button.Clicked
+activate c
+activate h
+h->hv:Invoke **navigateToHomeScreen()**
+activate hv
+hv-->h:Returns
+deactivate hv
+h-->c:Displays The **HomeScreen**
+deactivate h
+deactivate c
+
+
+==PESUDOCODE==
+hnote across
+
+
+        INVOKE **navigateToCreationScreen()** in the CreationScreen class 
+
+
+endnote
+
+
+
+@enduml

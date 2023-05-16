@@ -1,0 +1,110 @@
+@startuml Diagram for the NewService-Sequence && Pesudo
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+skinparam sequence{
+
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70  
+}
+title 'NewsService - getNews()'
+autonumber 1
+hide footbox
+
+participant Caller as c
+participant NewsService as ns
+participant Server as s
+participant Utilites as u
+
+c->ns:Invoke **getNews()**
+activate c
+activate ns
+alt #POSITIVERESPONSE (TRY)
+ns->s:Make the http get call to the URL 
+activate s
+s-->ns: Returns Response
+deactivate s
+ns->ns: Store the response in the **response** variable
+ns->ns: Invoke **getAPIServiceResult()** by using the response and store it in the variable **result**
+ns-->c: Return the **result**
+else #NEGATIVEERESPONSE (CATCH)
+ns->u:Invoke **exception.writeExecption()**
+activate u
+u-->ns:Returns
+deactivate u
+ns-->c:Return the ServiceResult with the statusCode as ServiceExecption \n and the message as the execption
+deactivate ns
+deactivate c
+end
+
+==PSEUDOCODE==
+hnote across
+    **TRY**
+        EXECUTE _dio.get() with the URL as **http//dummyjson.com/getNews** 
+        
+        STORE the response in the variable as **response**
+
+        EXECUTE the method **getAPIServiceResult** by passing content type as 'List<NewsBO>' and Store it in the variable  as **result**
+
+        RETURN the **result**
+
+    **CATCH**
+
+        RETURN the ServiceResult with statusCode as ServiceExecption with the exception message
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+
+c->ns: Invoke **createNews(NewsBO newsDetails)**
+activate c
+activate ns
+alt #POSITIVERESPONSE  (TRY)
+ns->ns: Serialize the **parameter** and assign to the varaibale 
+ns->s:Make the http post call to the URL 
+activate s
+s-->ns: Returns Response
+deactivate s
+ns->ns: Store the response in the **response** variable 
+ns->ns: Invoke **getAPIServiceResult()** by using the response and store it in the variable **result**
+ns-->c: Return the **result**
+else #NEGATIVEERESPONSE (CATCH)
+ns->u:Invoke **exception.writeExecption()**
+activate u
+u-->ns:Returns
+deactivate u
+ns-->c:Return the ServiceResult with the statusCode as ServiceExecption \n and the message as the execption
+deactivate ns
+deactivate c
+
+end
+
+==PSEUDOCODE==
+hnote across
+    **TRY**
+        SERIALIZE the parameter as **newsDetails** and assign to the varaibale  as **dataTobeSend**
+        
+        EXECUTE _dio.post() with the URL as **http//dummyjson.com/postNews** 
+        
+        STORE the response in the variable as **response**
+
+        EXECUTE the method **getAPIServiceResult** by passing content type as 'List<NewsBO>' and Store it in the variable  as **result**
+
+        RETURN the **result**
+
+    **CATCH**
+
+        RETURN the ServiceResult with statusCode as ServiceExecption with the exception message
+
+endnote
+
+
+@enduml

@@ -1,0 +1,111 @@
+@startuml Diagram for ResponseScreen
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title ReponseScreen
+autonumber 1
+hide  footbox
+participant User as c
+participant ResponseScreen as h
+participant ResponseScreenVM as hv
+
+c->h:Invoke **initState()**
+activate c
+activate h
+alt (TRY)
+    h->hv:Invoke the **Constructor()**
+    activate hv
+    hv-->h:Returns
+    deactivate hv
+    h->h:Add Listener to the NavigationStream
+    alt (event is navigatorPop)
+        h->h:Pop to the Context to the **HomeScreen**
+        h-->c:Returns
+    end
+else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+end
+
+    ==PESUDOCODE==
+    hnote across
+
+**TRY**
+
+    INVOKE the **Constructor()** 
+
+    ADD the Listener to the **NavigationStream**
+
+    **IF (event is navigatorPop)**
+
+    POP the Context to the **HomeScreen**
+
+    **CATCH**
+
+    INVOKE **writeException()** on the exception object **ex**.
+
+    endnote
+
+
+    newpage
+    autonumber 1
+    hide footbox
+    c->h:Invoke **dispose()**
+    activate c
+    activate h
+    alt  (TRY)
+    h->h:Dispose the **Instance** of the CreationScreen
+    h->h:Dispose the **navigationStream**
+    h-->c:Returns
+    else #NEGATIVEERESPONSE (CATCH)
+    h->h:Write LogExceptions
+    h-->c:Returns
+    deactivate h
+    deactivate c
+    end
+
+        ==PESUDOCODE==
+        hnote across
+
+        DISPOSE the **Instance** using **dispose()** method
+
+        DISPOSE the **navigationStream** using **dispose()** method
+
+
+        endnote
+
+    newpage
+    autonumber 1
+    hide footbox
+    c->h:'BackToHome' button.Clicked
+    activate c
+    activate h
+    h->hv:Invoke **navigateToHomeScreen()**
+    activate hv
+    hv-->h:Returns
+    deactivate hv
+    h-->c:Displays The **HomeScreen**
+    deactivate h
+    deactivate c
+
+    ==PESUDOCODE==
+    hnote across
+
+    INVOKE **navigateToCreationScreen()** in the CreationScreen class
+
+    endnote
+
+ @enduml

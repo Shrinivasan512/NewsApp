@@ -1,0 +1,78 @@
+@startuml Diagram of the HomeScreen
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+package Pages{
+    package HomeScreen{
+        class HomeScreenModel{
+            + newsService : INewsService
+            + originalNewsList : List<NewsBO>
+            + @tempNewsList : List<NewsBO>
+            + @isLoading : bool
+            + @statusCode : int
+
+        }
+        class HomeScreenVM{
+            + fetchAllNews():Future<void>
+            + filterNews(category: Category) : void 
+            + navigateToRetriveFailScreen() : void
+            + navigateToCreationScreen() : void
+        }
+        class HomeScreen{
+            - _homeScreenVM : HomeScreenVM
+            + initState() : void
+            + dispose() : void
+
+        }
+    }
+}
+package Services{
+    package NewsService{
+        Interface INewsService{
+            + getNews() : Future<ServiceResult<List<NewsBO>>>
+        }
+    }
+}
+package BOs{
+    package NewsBO{
+        class NewsBO{
+        }
+        class NewsBOExtension{
+            + filterBasedOnCategory() : List<NewsBO>
+        }
+    }
+}
+package Helpers{
+    package AppConstants{
+        enum Category{  
+            All
+            Politics
+            Sports
+            Busniess
+            Technology
+        }
+    }
+}
+
+HomeScreen-->HomeScreenVM:uses
+HomeScreenVM-->HomeScreenModel:extends
+HomeScreenVM-->NewsBO
+HomeScreenVM-->NewsBOExtension
+NewsBOExtension --> NewsBO
+HomeScreenVM-->INewsService
+HomeScreenVM-->Category
+
+
+
+@enduml

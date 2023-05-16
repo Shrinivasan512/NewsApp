@@ -1,0 +1,285 @@
+@startuml Diagram for the CreationScreenVM
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title CreationScreenVM
+autonumber 1
+hide footbox
+participant Caller as c
+participant CreationScreenVM as hv
+Participant NewsService as ns
+participant Utilites as ut
+
+c->hv:Invoke **createNews()**
+activate c
+activate hv
+alt  (TRY)
+hv->hv:Set **@isLoding** to true
+hv->hv:Create the instance for the **NewsBO** and pass the neccessary parameters
+hv->hv:Store the instance of the **NewsBO**  in the variable as **data**
+hv->ns:Invoke **createNews(newsDetails: data)**
+activate ns
+ns-->hv:Returns
+deactivate ns
+hv->hv:Store the response into the variable as **result**
+alt #POSITIVERESPONSE (result.statuscode == 200)
+hv->hv:Initalize the variable **@statuscode** as 200
+hv->hv:Invoke **navigateToResponseScreen()** with the parameter as pageconfig and data as **@statuscode**
+hv-->c:Returns
+else #NEGATIVEERESPONSE
+hv->hv:Initalize the variable **@statuscode** 
+hv->hv:Invoke **navigateToResponseScreen()** with the parameter as pageconfig and data as **@statuscode**
+hv-->c:Returns
+end
+hv->hv:Set **@isLoding** to false
+else #NEGATIVEERESPONSE (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+
+        SET the **@isLoding** as true
+
+        CREATE the instance for the **NewsBO** and pass the neccessary parameters
+
+        STORE the instance of the **NewsBO**  in the variable as **data**
+
+        INVOKE the method **createNews(newsDetails : data)** and pass the paramter as **InstanceBO**
+
+        STORE the response from the Service in a variable as **result**
+
+            **IF (result.statuscode == 200)**
+
+            INITALIZE the variable of **@statuscode** as 200
+
+            INVOKE the mathod **navigateToResponseScreen()** with the pageconfig and the data as **statuscode**
+
+            **ELSE**
+            
+            INITALIZE the variable of **@statuscode** as got from the ServiceResult
+
+            INVOKE the mathod **navigateToResponseScreen()** with the pageconfig and the data as **statuscode**
+
+        SET the **@isLoding** as false
+
+    **CATCH**
+
+        INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+c->hv:Invoke **onTitleChanged(title : String)**
+activate c 
+activate hv
+alt  (TRY)
+hv->hv:Set the **title** to **@title** variable
+hv->hv:Add the **textFeild** data as **@title** to the **textFeildStream**
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+      **TRY**
+
+        SET the **title** to **@title** variable
+
+        Add the **textFeild** data as **@title** to the **textFeildStream**
+        
+    **CATCH**
+    
+        INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+c->hv:Invoke **onDescriptionChanged(description : String)**
+activate c 
+activate hv
+alt  (TRY)
+hv->hv:Set the **description** to **@description** variable
+hv->hv:Add the **textFeild** data as **@description** to the **textFeildStream**
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+
+        SET the **description** to **@description** variable
+        
+        ADD the Textfeild data for **@description** to the TextfeildStream
+        
+    **CATCH**
+    
+        INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+c->hv:Invoke **onDateChanged(date : DateTime)**
+activate c 
+activate hv
+alt  (TRY)
+hv->ut:Invoke **formate(date : DateTime)**
+activate ut
+ut-->hv:Returns the formated date
+deactivate ut
+hv->hv:Set the **date** to **@date** variable
+hv->hv: Add the Textfeild data for **@date** to the TextfeildStream
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+     **TRY**
+
+        INVOKE the method **formate(date : DateTime)** in the utilites
+
+        SET the **date** to **@date** variable
+
+        ADD the Textfeild data for **@date** to the TextfeildStream
+
+        
+    **CATCH**
+
+        INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+
+newpage
+autonumber 1
+hide footbox
+c->hv:Invoke **onCategoryChanged(category : Category)**
+activate c 
+activate hv
+alt  (TRY)
+hv->hv:Set the **category** to **@category** variable
+hv->hv:Add the Textfeild data for **@category** to the TextfeildStream
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+
+        SET the **category** to **@category** variable
+
+        ADD the Textfeild data for **@category** to the TextfeildStream
+        
+    **CATCH**
+
+        INVOKE **writeException()** on the exception object **ex**.
+
+endnote
+
+
+newpage 
+autonumber 1
+hide footbox
+c->hv:Invoke **navigateToResponseScreen()**
+activate c
+activate hv
+alt  (TRY)
+hv->hv:Add **NavigatorPush** on the **NavigationStream**
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+    
+        ADD the **NavigatorPush** on the **NavigationStream**
+      
+    **CATCH**
+    
+        INVOKE **writeException()** on the exception object **ex**.
+
+
+
+endnote
+
+newpage 
+autonumber 1
+hide footbox
+c->hv:Invoke **navigateToHomeScreen()**
+activate c
+activate hv
+alt  (TRY)
+hv->hv:Add **NavigatorPop** on the **NavigationStream**
+hv-->c:Returns
+else #NEGATIVEERESPONSE  (CATCH)
+hv->hv:Write LogExceptions
+hv-->c:Returns
+deactivate hv
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+    **TRY**
+
+        ADD the **NavigatorPop** on the **NavigationStream**
+        
+    **CATCH**
+
+         INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+@enduml

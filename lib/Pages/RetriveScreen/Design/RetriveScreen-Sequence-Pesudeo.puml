@@ -1,0 +1,77 @@
+@startuml Diagram for RetriveFailScreen
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+title RetriveScreen
+autonumber 1
+hide footbox
+participant User as c
+participant RetriveScreen as h
+participant RetriveScreenVM as hv
+
+c->h:Invoke **initState()**
+activate c
+activate h
+alt  (TRY)
+h->hv:Invoke the **Constructor()** 
+activate hv
+hv-->h:Returns
+deactivate hv
+
+else #NEGATIVEERESPONSE (CATCH)
+h->h:Write LogExceptions
+h-->c:Returns
+deactivate h
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+
+        **TRY**
+        
+            INVOKE the **Constructor** 
+
+        **CATCH**
+        
+            INVOKE **writeException()** on the exception object **ex**.
+
+
+endnote
+
+newpage
+autonumber 1
+hide footbox
+c->h:Invoke **dispose()**
+activate c
+activate h
+alt (TRY)
+h->h:Dispose the **Instance** of the CreationScreen
+h-->c:Returns
+else (CATCH)
+h->h:Write LogExceptions
+h-->c:Returns
+deactivate h
+deactivate c
+end
+
+==PESUDOCODE==
+hnote across
+
+    DISPOSE the **Instance** using **dispose()** method
+
+endnote
+
+
+@enduml

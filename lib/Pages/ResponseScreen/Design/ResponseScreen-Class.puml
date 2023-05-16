@@ -1,0 +1,40 @@
+@startuml Diagram for the Response
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+
+}
+package Pages{
+    package ResponseScreen{
+        class ResponseScreen{
+            - _responseScreenVM : ResponseScreenVM
+            + initState() : void
+            + dispose() : void
+        }
+        class ResponseScreenVM{
+            + Constructor() : void
+            + navigateToHomeScreen() : void
+            + onCheckStatusCodeSetTitle() :  void 
+        }
+        class ResponseScreenModel{
+            + @statusCode : int
+            + @title : String
+        }
+    }
+}
+
+ResponseScreen-->ResponseScreenVM:uses
+ResponseScreenVM-->ResponseScreenModel:extends
+
+
+
+@enduml
